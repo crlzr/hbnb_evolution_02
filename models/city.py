@@ -7,9 +7,12 @@ import re
 from sqlalchemy import Column, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
+from flask import jsonify, request, abort
 
 class City(Base):
     """Representation of city """
+
+    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -76,4 +79,161 @@ class City(Base):
             raise ValueError("Invalid country_id specified: {}".format(value))
 
     # --- Static methods ---
-    # TODO:
+
+    @staticmethod
+    def all():
+        """ Class method that returns all city data"""
+        data = []
+
+        try:
+            city_data = storage.get('City')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to load cities!"
+
+        if USE_DB_STORAGE:
+            # DBStorage
+            for row in city_data:
+                # use print(row.__dict__) to see the contents of the sqlalchemy model objects
+                print(row.__dict__)
+                data.append({
+                    "id": row.id,
+                    "name": row.name,
+                    "country_id": row.country_id,
+                    "created_at": row.created_at.strftime(City.datetime_format),
+                    "updated_at": row.updated_at.strftime(City.datetime_format)
+                })
+        else:
+            # FileStorage
+            for k, v in city_data.items():
+                data.append({
+                    "id": v['id'],
+                    "name": v['name'],
+                    "country_id": v['country_id'],
+                    "created_at": datetime.fromtimestamp(v['created_at']),
+                    "updated_at": datetime.fromtimestamp(v['updated_at'])
+
+                })
+
+        return jsonify(data)
+
+    @staticmethod
+    def specific(city_id):
+        """ Class method that returns a specific cities's data"""
+        data = []
+
+        try:
+            city_data = storage.get('City', city_id)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "City not found!"
+
+        if USE_DB_STORAGE:
+            # DBStorage
+            for row in city_data:
+                # use print(row.__dict__) to see the contents of the sqlalchemy model objects
+                data.append({
+                    "id": row.id,
+                    "name": row.name,
+                    "country_id": row.country_id,
+                    "created_at": row.created_at.strftime(City.datetime_format),
+                    "updated_at": row.updated_at.strftime(City.datetime_format)
+            })
+        else:
+            # FileStorage
+            for k, v in city_data.items():
+                data.append({
+                    "id": v['id'],
+                    "name": v['name'],
+                    "country_id": v['country_id'],
+                    "created_at": datetime.fromtimestamp(v['created_at']),
+                    "updated_at": datetime.fromtimestamp(v['updated_at'])
+
+                })
+
+        return jsonify(data)
+
+    @staticmethod
+    def create():
+        """ Class method that creates a new city"""
+        if request.get_json() is None:
+            abort(400, "Not a JSON")
+
+        data = request.get_json()
+        if 'name' not in data:
+            abort(400, "Missing name")
+        if 'country_id' not in data:
+            abort(400, "Missing country id")
+
+        try:
+            new_city = City(
+                name=data["name"],
+                country_id=data["country_id"]
+            )
+        except ValueError as exc:
+            return repr(exc) + "\n"
+
+        # TODO: add a check here to ensure that the provided email is not already used by someone else in the DB
+        # If you see this message, tell me and I will (maybe) give you a cookie lol
+
+        output = {
+            "id": new_city.id,
+            "name": new_city.name,
+            "country_id": new_city.country_id,
+            "created_at": new_city.created_at,
+            "updated_at": new_city.updated_at
+        }
+
+        try:
+            if USE_DB_STORAGE:
+                # DBStorage - note that the add method uses the City object instance 'new_city'
+                storage.add('City', new_city)
+                # datetime -> readable text
+                output['created_at'] = new_city.created_at.strftime(City.datetime_format)
+                output['updated_at'] = new_city.updated_at.strftime(City.datetime_format)
+            else:
+                # FileStorage - note that the add method uses the dictionary 'output'
+                storage.add('City', output)
+                # timestamp -> readable text
+                output['created_at'] = datetime.fromtimestamp(new_city.created_at)
+                output['updated_at'] = datetime.fromtimestamp(new_city.updated_at)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to add new City!"
+
+        return jsonify(output)
+
+    @staticmethod
+    def update(city_id):
+        """ Class method that updates an existing City"""
+        if request.get_json() is None:
+            abort(400, "Not a JSON")
+
+        data = request.get_json()
+
+        try:
+            # update the City record. Only name and country_id are allowed to be modified
+            result = storage.update('City', city_id, data, ["name", "country_id"])
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to update specified country!"
+
+        if USE_DB_STORAGE:
+            output = {
+                "id": result.id,
+                "name": result.name,
+                "country_id": result.country_id,
+                "created_at": result.created_at.strftime(City.datetime_format),
+                "updated_at": result.updated_at.strftime(City.datetime_format)
+            }
+        else:
+            output = {
+                "id": result["id"],
+                "name": result["name"],
+                "country_id": result["country_id"],
+                "created_at": datetime.fromtimestamp(result["created_at"]),
+                "updated_at": datetime.fromtimestamp(result["updated_at"])
+            }
+
+        # print out the updated user details
+        return jsonify(output)
