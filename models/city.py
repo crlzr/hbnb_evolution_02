@@ -216,7 +216,7 @@ class City(Base):
             result = storage.update('City', city_id, data, ["name", "country_id"])
         except IndexError as exc:
             print("Error: ", exc)
-            return "Unable to update specified country!"
+            return "Unable to update specified city!"
 
         if USE_DB_STORAGE:
             output = {
@@ -237,3 +237,20 @@ class City(Base):
 
         # print out the updated user details
         return jsonify(output)
+
+    @staticmethod
+    def delete(city_id):
+        """ Class method that updates an existing City"""
+        # if request.get_json() is None:
+        #     abort(400, "Not a JSON")
+
+        #data = request.get_json()
+
+        try:
+            # delete the City record
+            storage.delete('City', city_id)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to delete specified city!"
+
+        return City.all()
