@@ -137,4 +137,6 @@ class DBStorage():
         return deepcopy(record)
 
     def delete(self, class_name, record_id):
-        pass
+        """ Method to delete items"""
+        #record = self.get(class_name, record_id)
+        raise IndexError("Unable to find the record to delete in db_storage.py")
