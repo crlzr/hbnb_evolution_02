@@ -135,3 +135,6 @@ class DBStorage():
 
         # For safety, don't return the original record. Return a copy instead
         return deepcopy(record)
+
+    def delete(self, class_name, record_id):
+        pass

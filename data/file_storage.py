@@ -78,6 +78,10 @@ class FileStorage():
 
         return record
 
+    def delete(self, class_name, record_id):
+        """ Method to delete items"""
+        pass
+
     def __load_models_data(self, filepath):
         """ Load JSON data from models file and returns as dictionary """
         temp = {}
