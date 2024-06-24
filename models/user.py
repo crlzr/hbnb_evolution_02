@@ -6,6 +6,7 @@ import uuid
 import re
 from flask import jsonify, request, abort
 from sqlalchemy import Column, String, DateTime
+from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
 
 class User(Base):
@@ -31,8 +32,8 @@ class User(Base):
         __last_name = Column("last_name", String(128), nullable=True, default="")
         __email = Column("email", String(128), nullable=False)
         __password = Column("password", String(128), nullable=False)
-        # properties = relationship("Place", back_populates="owner", cascade="delete, delete-orphan")
-        # reviews = relationship("Review", back_populates="writer", cascade="delete, delete-orphan")
+        properties = relationship("Place", back_populates="owner", cascade="delete, delete-orphan")
+        #reviews = relationship("Review", back_populates="writer", cascade="delete, delete-orphan")
 
     # Constructor
     def __init__(self, *args, **kwargs):
@@ -144,7 +145,7 @@ class User(Base):
                 })
         else:
             # FileStorage
-            for k, v in user_data.items():
+            for k, v in city_data.items():
                 data.append({
                     "id": v['id'],
                     "first_name": v['first_name'],
@@ -282,3 +283,20 @@ class User(Base):
 
         # print out the updated user details
         return jsonify(output)
+
+    @staticmethod
+    def delete(user_id):
+        """ Class method that deletes an existing User"""
+        # if request.get_json() is None:
+        #     abort(400, "Not a JSON")
+
+        #data = request.get_json()
+
+        try:
+            # delete the User record
+            storage.delete('User', user_id)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to delete specified User!"
+
+        return User.all()
