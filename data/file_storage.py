@@ -84,8 +84,11 @@ class FileStorage():
             if class_name not in self.__data['models'] or record_id not in self.__data['models'][class_name]:
                 raise IndexError("Unable to find the record to delete in file_storage.py")
 
-        #record = self.get(class_name, record_id)
-        raise IndexError("Unable to find the record to delete in file_storage.py")
+        try:
+            data_to_del = self.get(class_name)
+            data_to_del.pop(record_id, None)
+        except:
+            raise IndexError("Unable to delete the record.")
 
     def __load_models_data(self, filepath):
         """ Load JSON data from models file and returns as dictionary """

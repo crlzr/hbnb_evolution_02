@@ -139,4 +139,25 @@ class DBStorage():
     def delete(self, class_name, record_id):
         """ Method to delete items"""
         #record = self.get(class_name, record_id)
-        raise IndexError("Unable to find the record to delete in db_storage.py")
+        #raise IndexError("Unable to find the record to delete in db_storage.py")
+
+        if class_name == "":
+            raise IndexError("Unable to load Model data. No class name specified")
+
+        if not self.__module_names[class_name]:
+            raise IndexError("Unable to load Model data. Specified class name not found")
+
+        namespace = self.__module_names[class_name]
+        module = importlib.import_module("models." + namespace)
+        class_ = getattr(module, class_name)
+
+        try:
+            data_to_del = self.__session.query(class_).where(class_.id == record_id).limit(1).one()
+        except:
+            raise IndexError("Unable to load Model data. Specified id not found")
+
+        try:
+            self.__session.delete(data_to_del)
+            self.__session.commit()
+        except:
+            raise IndexError("Unable to delete record.")
