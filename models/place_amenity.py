@@ -394,8 +394,11 @@ class Place(Base):
         data = request.get_json()
 
         try:
-            # update the Place record. Only place name is allowed to be modified
-            result = storage.update('Place', place_id, data, ["name"])
+            # update the Place record. All attributes except id, created & updated are allowed to be modified
+            result = storage.update('Place', place_id, data,
+                                    ["name", "host_user_id", "city_id","description", "address",
+                                     "latitude", "longitude", "number_of_rooms", "bathrooms",
+                                     "price_per_night", "max_guests"])
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to update specified place!"
@@ -415,7 +418,7 @@ class Place(Base):
                 "price_per_night": result.price_per_night,
                 "max_guests": result.max_guests,
                 "created_at": result.created_at.strftime(Place.datetime_format),
-                    "updated_at": result.updated_at.strftime(Place.datetime_format)
+                "updated_at": result.updated_at.strftime(Place.datetime_format)
             }
         else:
             output = {
@@ -441,11 +444,6 @@ class Place(Base):
     @staticmethod
     def delete(place_id):
         """ Class method that deletes an existing Place"""
-        # if request.get_json() is None:
-        #     abort(400, "Not a JSON")
-
-        #data = request.get_json()
-
         try:
             # delete the Place record
             storage.delete('Place', place_id)
@@ -537,44 +535,32 @@ class Amenity(Base):
         return jsonify(data)
 
     @staticmethod
-    def specific(amenity_code):
+    def specific(amenity_id):
         """ Class method that returns a specific amenities' data"""
-        data = None
+        data = []
 
         try:
-            amenity_data = storage.get('Amenity')
+            amenity_data = storage.get('Amenity', amenity_id)
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to load Amenity data!"
 
         if USE_DB_STORAGE:
-            # Surely there must be a more optimised way to do this than using a for-loop right?
-            # I mean it's ok now since there are only a few amenities...
-            # but what if there are a million amenities in the future?
-
-            for row in amenity_data:
-                if row.code == amenity_code:
-                    data = row
-
-            c = {
-                "id": data.id,
-                "name": data.name,
-                "created_at": data.created_at.strftime(Amenity.datetime_format),
-                "updated_at": data.updated_at.strftime(Amenity.datetime_format)
-            }
+            data.append({
+                "id": amenity_data.id,
+                "name": amenity_data.name,
+                "created_at": amenity_data.created_at.strftime(Amenity.datetime_format),
+                "updated_at": amenity_data.updated_at.strftime(Amenity.datetime_format)
+                })
         else:
-            for k, v in amenity_data.items():
-                if v['code'] == amenity_code:
-                    data = v
+            data.append({
+                "id": amenity_data['id'],
+                "name": amenity_data['name'],
+                "created_at": datetime.fromtimestamp(amenity_data['created_at']),
+                "updated_at": datetime.fromtimestamp(amenity_data['updated_at'])
+                })
 
-            c = {
-                "id": data['id'],
-                "name": data['name'],
-                "created_at": datetime.fromtimestamp(data['created_at']),
-                "updated_at": datetime.fromtimestamp(data['updated_at'])
-            }
-
-        return jsonify(c)
+        return jsonify(data)
 
     @staticmethod
     def create():
@@ -595,12 +581,12 @@ class Amenity(Base):
 
         output = {
             "id": new_amenity.id,
+            "name": new_amenity.name,
             "created_at": new_amenity.created_at,
             "updated_at": new_amenity.updated_at
         }
 
-        # TODO: add a check for the country code to ensure that we don't have 2
-        # countries with the same code ---> do we need to do that for amenity???
+        ###### TO DO ##### ONLY UNIQUE NAME FOR AMENITY
 
         try:
             if USE_DB_STORAGE:
@@ -620,7 +606,7 @@ class Amenity(Base):
         return jsonify(output)
 
     @staticmethod
-    def update(amenity_code):
+    def update(amenity_id):
         """ Class method that updates an existing Amenity"""
         if request.get_json() is None:
             abort(400, "Not a JSON")
@@ -628,30 +614,8 @@ class Amenity(Base):
         data = request.get_json()
 
         try:
-            amenity_data = storage.get('Amenity')
-        except IndexError as exc:
-            print("Error: ", exc)
-            return "Unable to load Amenity data!"
-
-        # More unoptimised code!
-        # Surely there's a better way to search for the country id? --> Amenity??
-
-        amenity_id = ""
-        if USE_DB_STORAGE:
-            for row in amenity_data:
-                if row.code == amenity_code:
-                    amenity_id = row.id
-        else:
-            for k, v in amenity_data.items():
-                if v['code'] == amenity_code: # WHERE DOES THIS 'CODE' COME FROM?? Do we need it for amenity?
-                    amenity_id = v["id"]
-
-        if amenity_id == "":
-            abort(400, "Amenity not found for code {}".format(amenity_code))
-
-        try:
             # update the Amenity record. Only name can be changed
-            result = storage.update('Country', amenity_id, data, ["name"])
+            result = storage.update('Amenity', amenity_id, data, ["name"])
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to update specified Amenity!"
@@ -662,11 +626,25 @@ class Amenity(Base):
                 "name": result.name,
                 "created_at": result.created_at.strftime(Amenity.datetime_format),
                 "updated_at": result.updated_at.strftime(Amenity.datetime_format)
-            }
+                }
         else:
             output = {
                 "id": result['id'],
                 "name": result['name'],
                 "created_at": datetime.fromtimestamp(result['created_at']),
                 "updated_at": datetime.fromtimestamp(result['updated_at'])
-            }
+                }
+
+        return jsonify(output)
+
+    @staticmethod
+    def delete(amenity_id):
+        """ Class method that deletes an existing Amenity"""
+        try:
+            # delete an Amenity
+            storage.delete('Amenity', amenity_id)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to delete specified Amenity!"
+
+        return Amenity.all()
