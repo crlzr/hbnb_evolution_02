@@ -573,6 +573,8 @@ class Amenity(Base):
         if 'name' not in data:
             abort(400, "Missing name")
 
+        ###### TO DO ##### ONLY UNIQUE NAME FOR AMENITY
+
         try:
             new_amenity = Amenity(
                 name=data["name"],
@@ -580,31 +582,27 @@ class Amenity(Base):
         except ValueError as exc:
             return repr(exc) + "\n"
 
-        output = {
-            "id": new_amenity.id,
-            "name": new_amenity.name,
-            "created_at": new_amenity.created_at,
-            "updated_at": new_amenity.updated_at
-        }
-
-        ###### TO DO ##### ONLY UNIQUE NAME FOR AMENITY
-
         try:
             if USE_DB_STORAGE:
                 # DBStorage - note that the add method uses the Amenity object instance
                 storage.add('Amenity', new_amenity)
-                output['created_at'] = new_amenity.created_at.strftime(Amenity.datetime_format)
-                output['updated_at'] = new_amenity.updated_at.strftime(Amenity.datetime_format)
             else:
                 # FileStorage - note that the add method uses the dictionary 'output'
+                output = {
+                    "id": new_amenity.id,
+                    "name": new_amenity.name,
+                    "created_at": new_amenity.created_at,
+                    "updated_at": new_amenity.updated_at
+                    }
                 storage.add('Amenity', output)
-                output['created_at'] = datetime.fromtimestamp(Amenity.created_at)
-                output['updated_at'] = datetime.fromtimestamp(Amenity.updated_at)
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to add new Amenity!"
 
-        return jsonify(output)
+        try:
+            return Amenity.specific(new_amenity.id)
+        except IndexError:
+            return "New Amenity not stored correctly"
 
     @staticmethod
     def update(amenity_id):

@@ -22,3 +22,8 @@ def amenity_specific_get(amenity_id):
 def amenity_put(amenity_id):
     """ Updates a specific Amenity and returns it """
     return Amenity.update(amenity_id)
+
+@api_routes.route('/amenities/<amenity_id>', methods=["DELETE"])
+def amenity_delete(amenity_id):
+    """ deletes existing amenity data using specified id """
+    return Amenity.delete(amenity_id)
