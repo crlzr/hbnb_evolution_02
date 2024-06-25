@@ -301,20 +301,20 @@ class Place(Base):
         else:
             # FileStorage
             data.append({
-                "id": v['id'],
-                "host_user_id": v['host_user_id'],
-                "city_id": v['city_id'],
-                "name": v['name'],
-                "description": v['description'],
-                "address": v['address'],
-                "latitude": v['latitude'],
-                "longitude": v['longitude'],
-                "number_of_rooms": v['number_of_rooms'],
-                "bathrooms": v['bathrooms'],
-                "price_per_night": v['price_per_night'],
-                "max_guests": v['max_guests'],
-                "created_at": datetime.fromtimestamp(v['created_at']),
-                "updated_at": datetime.fromtimestamp(v['updated_at'])
+                "id": place_data['id'],
+                "host_user_id": place_data['host_user_id'],
+                "city_id": place_data['city_id'],
+                "name": place_data['name'],
+                "description": place_data['description'],
+                "address": place_data['address'],
+                "latitude": place_data['latitude'],
+                "longitude": place_data['longitude'],
+                "number_of_rooms": place_data['number_of_rooms'],
+                "bathrooms": place_data['bathrooms'],
+                "price_per_night": place_data['price_per_night'],
+                "max_guests": place_data['max_guests'],
+                "created_at": datetime.fromtimestamp(place_data['created_at']),
+                "updated_at": datetime.fromtimestamp(place_data['updated_at'])
                 })
 
         return jsonify(data)
