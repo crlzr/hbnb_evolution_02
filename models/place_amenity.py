@@ -335,19 +335,19 @@ class Place(Base):
 
         try:
             new_place = Place(
-                first_name=data["first_name"],
-                id = data["id"],
-                host_user_id=data["host_user_id"],
-                city_id=data["city_id"],
-                name=data["name"],
-                description=data["description"],
-                address=data["address"],
-                latitude=data["latitude"],
-                longitude=data["longitude"],
-                number_of_rooms=data["number_of_rooms"],
-                bathrooms=data["bathrooms"],
-                price_per_night=data["price_per_night"],
-                max_guests=data["max_guests"],
+            first_name=data["first_name"],
+            id = data["id"],
+            host_user_id=data["host_user_id"],
+            city_id=data["city_id"],
+            name=data["name"],
+            description=data["description"],
+            address=data["address"],
+            latitude=data["latitude"],
+            longitude=data["longitude"],
+            number_of_rooms=data["number_of_rooms"],
+            bathrooms=data["bathrooms"],
+            price_per_night=data["price_per_night"],
+            max_guests=data["max_guests"],
             )
         except ValueError as exc:
             return repr(exc) + "\n"
@@ -509,4 +509,167 @@ class Amenity(Base):
             raise ValueError("Invalid amenity name specified: {}".format(value))
 
     # --- Static methods ---
-    # TODO:
+    @staticmethod
+    def all():
+        """ Class method that returns all amenity data"""
+        data = []
+
+        try:
+            amenity_data = storage.get('Amenity')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to load amenities!"
+
+        if USE_DB_STORAGE:
+            for row in amenity_data:
+                data.append({
+                    "id": row.id,
+                    "name": row.name,
+                    "created_at": row.created_at.strftime(Amenity.datetime_format),
+                    "updated_at": row.updated_at.strftime(Amenity.datetime_format)
+                })
+        else:
+            for k, v in amenity_data.items():
+                data.append({
+                    "id": v['id'],
+                    "name": v['name'],
+                    "created_at": datetime.fromtimestamp(v['created_at']),
+                    "updated_at": datetime.fromtimestamp(v['updated_at'])
+                })
+
+        return jsonify(data)
+
+    @staticmethod
+    def specific(amenity_code):
+        """ Class method that returns a specific amenities' data"""
+        data = None
+
+        try:
+            amenity_data = storage.get('Amenity')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to load Amenity data!"
+
+        if USE_DB_STORAGE:
+            # Surely there must be a more optimised way to do this than using a for-loop right?
+            # I mean it's ok now since there are only a few amenities...
+            # but what if there are a million amenities in the future?
+
+            for row in amenity_data:
+                if row.code == amenity_code:
+                    data = row
+
+            c = {
+                "id": data.id,
+                "name": data.name,
+                "created_at": data.created_at.strftime(Amenity.datetime_format),
+                "updated_at": data.updated_at.strftime(Amenity.datetime_format)
+            }
+        else:
+            for k, v in amenity_data.items():
+                if v['code'] == amenity_code:
+                    data = v
+
+            c = {
+                "id": data['id'],
+                "name": data['name'],
+                "created_at": datetime.fromtimestamp(data['created_at']),
+                "updated_at": datetime.fromtimestamp(data['updated_at'])
+            }
+
+        return jsonify(c)
+
+    @staticmethod
+    def create():
+        """ Class method that creates a new amenity"""
+        if request.get_json() is None:
+            abort(400, "Not a JSON")
+
+        data = request.get_json()
+        if 'name' not in data:
+            abort(400, "Missing name")
+
+        try:
+            new_amenity = Amenity(
+                name=data["name"],
+            )
+        except ValueError as exc:
+            return repr(exc) + "\n"
+
+        output = {
+            "id": new_amenity.id,
+            "created_at": new_amenity.created_at,
+            "updated_at": new_amenity.updated_at
+        }
+
+        # TODO: add a check for the country code to ensure that we don't have 2
+        # countries with the same code ---> do we need to do that for amenity???
+
+        try:
+            if USE_DB_STORAGE:
+                # DBStorage - note that the add method uses the Amenity object instance
+                storage.add('Amenity', new_amenity)
+                output['created_at'] = new_amenity.created_at.strftime(Amenity.datetime_format)
+                output['updated_at'] = new_amenity.updated_at.strftime(Amenity.datetime_format)
+            else:
+                # FileStorage - note that the add method uses the dictionary 'output'
+                storage.add('Amenity', output)
+                output['created_at'] = datetime.fromtimestamp(Amenity.created_at)
+                output['updated_at'] = datetime.fromtimestamp(Amenity.updated_at)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to add new Amenity!"
+
+        return jsonify(output)
+
+    @staticmethod
+    def update(amenity_code):
+        """ Class method that updates an existing Amenity"""
+        if request.get_json() is None:
+            abort(400, "Not a JSON")
+
+        data = request.get_json()
+
+        try:
+            amenity_data = storage.get('Amenity')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to load Amenity data!"
+
+        # More unoptimised code!
+        # Surely there's a better way to search for the country id? --> Amenity??
+
+        amenity_id = ""
+        if USE_DB_STORAGE:
+            for row in amenity_data:
+                if row.code == amenity_code:
+                    amenity_id = row.id
+        else:
+            for k, v in amenity_data.items():
+                if v['code'] == amenity_code: # WHERE DOES THIS 'CODE' COME FROM?? Do we need it for amenity?
+                    amenity_id = v["id"]
+
+        if amenity_id == "":
+            abort(400, "Amenity not found for code {}".format(amenity_code))
+
+        try:
+            # update the Amenity record. Only name can be changed
+            result = storage.update('Country', amenity_id, data, ["name"])
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to update specified Amenity!"
+
+        if USE_DB_STORAGE:
+            output = {
+                "id": result.id,
+                "name": result.name,
+                "created_at": result.created_at.strftime(Amenity.datetime_format),
+                "updated_at": result.updated_at.strftime(Amenity.datetime_format)
+            }
+        else:
+            output = {
+                "id": result['id'],
+                "name": result['name'],
+                "created_at": datetime.fromtimestamp(result['created_at']),
+                "updated_at": datetime.fromtimestamp(result['updated_at'])
+            }
