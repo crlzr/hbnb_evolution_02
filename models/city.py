@@ -95,7 +95,6 @@ class City(Base):
             # DBStorage
             for row in city_data:
                 # use print(row.__dict__) to see the contents of the sqlalchemy model objects
-                print(row.__dict__)
                 data.append({
                     "id": row.id,
                     "name": row.name,
@@ -130,25 +129,22 @@ class City(Base):
 
         if USE_DB_STORAGE:
             # DBStorage
-            for row in city_data:
-                # use print(row.__dict__) to see the contents of the sqlalchemy model objects
-                data.append({
-                    "id": row.id,
-                    "name": row.name,
-                    "country_id": row.country_id,
-                    "created_at": row.created_at.strftime(City.datetime_format),
-                    "updated_at": row.updated_at.strftime(City.datetime_format)
-            })
+            # use print(row.__dict__) to see the contents of the sqlalchemy model objects
+            data.append({
+                "id": city_data.id,
+                "name": city_data.name,
+                "country_id": city_data.country_id,
+                "created_at": city_data.created_at.strftime(City.datetime_format),
+                "updated_at": city_data.updated_at.strftime(City.datetime_format)
+                })
         else:
             # FileStorage
-            for k, v in city_data.items():
-                data.append({
-                    "id": v['id'],
-                    "name": v['name'],
-                    "country_id": v['country_id'],
-                    "created_at": datetime.fromtimestamp(v['created_at']),
-                    "updated_at": datetime.fromtimestamp(v['updated_at'])
-
+            data.append({
+                "id": city_data['id'],
+                "name": city_data['name'],
+                "country_id": city_data['country_id'],
+                "created_at": datetime.fromtimestamp(city_data['created_at']),
+                "updated_at": datetime.fromtimestamp(city_data['updated_at'])
                 })
 
         return jsonify(data)
@@ -240,12 +236,7 @@ class City(Base):
 
     @staticmethod
     def delete(city_id):
-        """ Class method that updates an existing City"""
-        # if request.get_json() is None:
-        #     abort(400, "Not a JSON")
-
-        #data = request.get_json()
-
+        """ Class method that deletes an existing City"""
         try:
             # delete the City record
             storage.delete('City', city_id)

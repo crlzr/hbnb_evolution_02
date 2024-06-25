@@ -145,7 +145,7 @@ class User(Base):
                 })
         else:
             # FileStorage
-            for k, v in city_data.items():
+            for k, v in user_data.items():
                 data.append({
                     "id": v['id'],
                     "first_name": v['first_name'],

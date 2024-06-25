@@ -236,25 +236,23 @@ class Country(Base):
             abort(400, "Country not found for code {}".format(country_code))
 
         try:
-            # update the Country record. Only name can be changed
-            result = storage.update('Country', country_id, data, ["name"])
+            # update the Amenity record. Only name can be changed
+            result = storage.update('Amenity', amenity_id, data, ["name"])
         except IndexError as exc:
             print("Error: ", exc)
-            return "Unable to update specified country!"
+            return "Unable to update specified amenity!"
 
         if USE_DB_STORAGE:
             output = {
                 "id": result.id,
                 "name": result.name,
-                "code": result.code,
-                "created_at": result.created_at.strftime(Country.datetime_format),
-                "updated_at": result.updated_at.strftime(Country.datetime_format)
+                "created_at": result.created_at.strftime(Amenity.datetime_format),
+                "updated_at": result.updated_at.strftime(Amenity.datetime_format)
             }
         else:
             output = {
                 "id": result['id'],
                 "name": result['name'],
-                "code": result['code'],
                 "created_at": datetime.fromtimestamp(result['created_at']),
                 "updated_at": datetime.fromtimestamp(result['updated_at'])
             }

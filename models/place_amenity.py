@@ -467,12 +467,13 @@ class Amenity(Base):
     __name = ""
 
     # Class attrib defaults
-    __tablename__ = 'amenities'
-    id = Column(String(60), nullable=False, primary_key=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.now())
-    updated_at = Column(DateTime, nullable=False, default=datetime.now())
-    __name = Column("name", String(128), nullable=False)
-    places = relationship("Place", secondary=place_amenity, back_populates = 'amenities')
+    if USE_DB_STORAGE:
+        __tablename__ = 'amenities'
+        id = Column(String(60), nullable=False, primary_key=True)
+        created_at = Column(DateTime, nullable=False, default=datetime.now())
+        updated_at = Column(DateTime, nullable=False, default=datetime.now())
+        __name = Column("name", String(128), nullable=False)
+        places = relationship("Place", secondary=place_amenity, back_populates='amenities')
 
     # constructor
     def __init__(self, *args, **kwargs):
