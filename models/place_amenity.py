@@ -296,27 +296,26 @@ class Place(Base):
                 "price_per_night": place_data.price_per_night,
                 "max_guests": place_data.max_guests,
                 "created_at": place_data.created_at.strftime(Place.datetime_format),
-                    "updated_at": place_data.updated_at.strftime(Place.datetime_format)
+                "updated_at": place_data.updated_at.strftime(Place.datetime_format)
             })
         else:
             # FileStorage
-            for k, v in place_data.items():
-                data.append({
-                    "id": v['id'],
-                    "host_user_id": v['host_user_id'],
-                    "city_id": v['city_id'],
-                    "name": v['name'],
-                    "description": v['description'],
-                    "address": v['address'],
-                    "latitude": v['latitude'],
-                    "longitude": v['longitude'],
-                    "number_of_rooms": v['number_of_rooms'],
-                    "bathrooms": v['bathrooms'],
-                    "price_per_night": v['price_per_night'],
-                    "max_guests": v['max_guests'],
-                    "created_at": datetime.fromtimestamp(v['created_at']),
-                    "updated_at": datetime.fromtimestamp(v['updated_at'])
-                    })
+            data.append({
+                "id": v['id'],
+                "host_user_id": v['host_user_id'],
+                "city_id": v['city_id'],
+                "name": v['name'],
+                "description": v['description'],
+                "address": v['address'],
+                "latitude": v['latitude'],
+                "longitude": v['longitude'],
+                "number_of_rooms": v['number_of_rooms'],
+                "bathrooms": v['bathrooms'],
+                "price_per_night": v['price_per_night'],
+                "max_guests": v['max_guests'],
+                "created_at": datetime.fromtimestamp(v['created_at']),
+                "updated_at": datetime.fromtimestamp(v['updated_at'])
+                })
 
         return jsonify(data)
 
@@ -327,27 +326,25 @@ class Place(Base):
             abort(400, "Not a JSON")
 
         data = request.get_json()
-        for key in ["host_user_id", "city_id", "name","description", "address",
-                "latitude", "longitude",  "number_of_rooms", "bathrooms",
+        for key in ["host_user_id", "city_id", "name", "description", "address",
+                "latitude", "longitude", "number_of_rooms", "bathrooms",
                 "price_per_night", "max_guests"]:
             if key not in data:
                 abort(400, "Missing {}".format(key))
 
         try:
             new_place = Place(
-            first_name=data["first_name"],
-            id = data["id"],
-            host_user_id=data["host_user_id"],
-            city_id=data["city_id"],
-            name=data["name"],
-            description=data["description"],
-            address=data["address"],
-            latitude=data["latitude"],
-            longitude=data["longitude"],
-            number_of_rooms=data["number_of_rooms"],
-            bathrooms=data["bathrooms"],
-            price_per_night=data["price_per_night"],
-            max_guests=data["max_guests"],
+                host_user_id=data["host_user_id"],
+                city_id=data["city_id"],
+                name=data["name"],
+                description=data["description"],
+                address=data["address"],
+                latitude=data["latitude"],
+                longitude=data["longitude"],
+                number_of_rooms=data["number_of_rooms"],
+                bathrooms=data["bathrooms"],
+                price_per_night=data["price_per_night"],
+                max_guests=data["max_guests"],
             )
         except ValueError as exc:
             return repr(exc) + "\n"
