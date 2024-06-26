@@ -34,7 +34,8 @@ class Review(Base):
         __rating = Column("rating", Integer, nullable=False, default=0)
         __commentor_user_id = Column("commentor_user_id", String(128), ForeignKey("users.id"), nullable=False)
         __place_id = Column("place_id", String(128), ForeignKey('places.id'), nullable=False)
-        #country = relationship("Country", back_populates="cities")
+        place = relationship("Place", back_populates="reviews")
+        writer = relationship("User", back_populates="reviews")
 
     # constructor
     def __init__(self, *args, **kwargs):

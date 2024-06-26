@@ -17,13 +17,13 @@ def countries_get():
     """ returns countires data """
     return Country.all()
 
-@api_routes.route('/countries/<country_code>', methods=["GET"])
-def countries_specific_get(country_code):
+@api_routes.route('/countries/<country_id>', methods=["GET"])
+def countries_specific_get(country_id):
     """ returns specific country data """
-    return Country.specific(country_code)
+    return Country.specific(country_id)
 
-@api_routes.route('/countries/<country_code>', methods=["PUT"])
-def countries_put(country_code):
+@api_routes.route('/countries/<country_id>', methods=["PUT"])
+def countries_put(country_id):
     """ updates existing country data using specified id """
     # -- Usage example --
     # curl -X PUT [URL] /
@@ -31,13 +31,13 @@ def countries_put(country_code):
     #    -d '{"key1":"value1","key2":"value2"}'
 
     # can only update name
-    return Country.update(country_code)
+    return Country.update(country_id)
 
-@api_routes.route('/countries/<country_code>/cities', methods=["GET"])
-def countries_specific_cities_get(country_code):
+@api_routes.route('/countries/<country_id>/cities', methods=["GET"])
+def countries_specific_cities_get(country_id):
     """ returns cities data of specified country """
 
     # If you're using DB Storage, you can probably use the model's relationship to save yourself some work
     # Look in the example endpoints in app.py for a hint
 
-    return Country.cities_data(country_code)
+    return Country.cities_data(country_id)
