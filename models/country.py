@@ -258,3 +258,15 @@ class Country(Base):
                     })
 
         return data
+
+    @staticmethod
+    def delete(country_id):
+        """ Class method that deletes an existing Country"""
+        try:
+            # delete the Country record
+            storage.delete('Country', country_id)
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to delete specified country!"
+
+        return Country.all()
