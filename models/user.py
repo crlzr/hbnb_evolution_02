@@ -228,36 +228,30 @@ class User(Base):
         except ValueError as exc:
             return repr(exc) + "\n"
 
-        # TODO: add a check here to ensure that the provided email is not already used by someone else in the DB
-        # If you see this message, tell me and I will (maybe) give you a cookie lol
-
-        output = {
-            "id": new_user.id,
-            "first_name": new_user.first_name,
-            "last_name": new_user.last_name,
-            "email": new_user.email,
-            "created_at": new_user.created_at,
-            "updated_at": new_user.updated_at
-        }
-
         try:
             if USE_DB_STORAGE:
                 # DBStorage - note that the add method uses the User object instance 'new_user'
                 storage.add('User', new_user)
-                # datetime -> readable text
-                output['created_at'] = new_user.created_at.strftime(User.datetime_format)
-                output['updated_at'] = new_user.updated_at.strftime(User.datetime_format)
             else:
+                output = {
+                    "id": new_user.id,
+                    "first_name": new_user.first_name,
+                    "last_name": new_user.last_name,
+                    "email": new_user.email,
+                    "password": new_user.password,
+                    "created_at": new_user.created_at,
+                    "updated_at": new_user.updated_at
+                }
                 # FileStorage - note that the add method uses the dictionary 'output'
                 storage.add('User', output)
-                # timestamp -> readable text
-                output['created_at'] = datetime.fromtimestamp(new_user.created_at)
-                output['updated_at'] = datetime.fromtimestamp(new_user.updated_at)
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to add new User!"
 
-        return jsonify(output)
+        try:
+            return User.specific(new_user.id)
+        except IndexError:
+            return "New User not stored correctly"
 
     @staticmethod
     def update(user_id):
@@ -299,11 +293,6 @@ class User(Base):
     @staticmethod
     def delete(user_id):
         """ Class method that deletes an existing User"""
-        # if request.get_json() is None:
-        #     abort(400, "Not a JSON")
-
-        #data = request.get_json()
-
         try:
             # delete the User record
             storage.delete('User', user_id)
