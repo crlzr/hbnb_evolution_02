@@ -200,11 +200,24 @@ class User(Base):
         if request.get_json() is None:
             abort(400, "Not a JSON")
 
+        try:
+            user_data = storage.get('User')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to load users!"
+        
         data = request.get_json()
         if 'email' not in data:
             abort(400, "Missing email")
         if 'password' not in data:
             abort(400, "Missing password")
+        for user in user_data:
+            if USE_DB_STORAGE:
+                if data['email'] == user.email:
+                    abort(400, "Email must be unique")
+            else:
+                if data['email'] == user_data[user]['email']:
+                    abort(400, "Email must be unique")
 
         try:
             new_user = User(
