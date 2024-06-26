@@ -207,10 +207,9 @@ class User(Base):
             return "Unable to load users!"
         
         data = request.get_json()
-        if 'email' not in data:
-            abort(400, "Missing email")
-        if 'password' not in data:
-            abort(400, "Missing password")
+        for key in ["first_name", "last_name", "email", "password"]:
+            if key not in data:
+                abort(400, "Missing {}".format(key))
         for user in user_data:
             if USE_DB_STORAGE:
                 if data['email'] == user.email:
