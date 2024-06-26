@@ -153,11 +153,29 @@ class Country(Base):
         if request.get_json() is None:
             abort(400, "Not a JSON")
 
+        try:
+            country_data = storage.get('Country')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Country not found!"
+        
         data = request.get_json()
         if 'name' not in data:
             abort(400, "Missing name")
         if 'code' not in data:
             abort(400, "Missing country code")
+        for country in country_data:
+            if USE_DB_STORAGE:
+                if data['code'] == country.code:
+                    abort(400, "Code must be unique")
+                if data['name'] == country.name:
+                    abort(400, "Name must be unique")
+            else:
+                if data['code'] == country_data[country]['code']:
+                    abort(400, "Code must be unique")
+                if data['name'] == country_data[country]['name']:
+                    abort(400, "Name must be unique")
+
 
         try:
             new_country = Country(

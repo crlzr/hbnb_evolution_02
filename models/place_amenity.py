@@ -569,11 +569,22 @@ class Amenity(Base):
         if request.get_json() is None:
             abort(400, "Not a JSON")
 
+        try:
+            amenity_data = storage.get('Amenity')
+        except IndexError as exc:
+            print("Error: ", exc)
+            return "Unable to load Amenity data!"
+
         data = request.get_json()
         if 'name' not in data:
             abort(400, "Missing name")
-
-        ###### TO DO ##### ONLY UNIQUE NAME FOR AMENITY
+        for amenity in amenity_data:
+            if USE_DB_STORAGE:
+                if data['name'] == amenity.name:
+                    abort(400, "Name must be unique")
+            else:
+                if data['name'] == amenity_data[amenity]['name']:
+                    abort(400, "Name must be unique")
 
         try:
             new_amenity = Amenity(
