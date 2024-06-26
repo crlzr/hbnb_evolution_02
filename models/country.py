@@ -29,7 +29,7 @@ class Country(Base):
         updated_at = Column(DateTime, nullable=False, default=datetime.now())
         __name = Column("name", String(128), nullable=False)
         __code = Column("code", String(2), nullable=False)
-        cities = relationship("City", back_populates="country", cascade="delete, delete-orphan")
+        #cities = relationship("City", back_populates="country", cascade="delete, delete-orphan")
 
     # Constructor
     def __init__(self, *args, **kwargs):

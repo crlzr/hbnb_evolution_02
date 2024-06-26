@@ -28,7 +28,7 @@ class City(Base):
         updated_at = Column(DateTime, nullable=False, default=datetime.now())
         __name = Column("name", String(128), nullable=False)
         __country_id = Column("country_id", String(128), ForeignKey('countries.id'), nullable=False)
-        country = relationship("Country", back_populates="cities")
+        #country = relationship("Country", back_populates="cities")
 
     # constructor
     def __init__(self, *args, **kwargs):

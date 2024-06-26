@@ -138,8 +138,6 @@ class DBStorage():
 
     def delete(self, class_name, record_id):
         """ Method to delete items"""
-        #record = self.get(class_name, record_id)
-        #raise IndexError("Unable to find the record to delete in db_storage.py")
 
         if class_name == "":
             raise IndexError("Unable to load Model data. No class name specified")
