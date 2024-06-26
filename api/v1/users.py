@@ -38,3 +38,8 @@ def users_put(user_id):
     # use the User class' static .update method
     # can only update first_name and last_name
     return User.update(user_id)
+
+@api_routes.route('/users/<user_id>', methods=["DELETE"])
+def user_delete(user_id):
+    """ deletes existing user data using specified id """
+    return User.delete(user_id)

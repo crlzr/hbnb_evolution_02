@@ -22,3 +22,8 @@ def places_specific_get(place_id):
 def places_put(place_id):
     """updates a specific Place and returns it"""
     return Place.update(place_id)
+
+@api_routes.route('/places/<place_id>', methods=["DELETE"])
+def place_delete(place_id):
+    """ deletes existing place data using specified id """
+    return Place.delete(place_id)

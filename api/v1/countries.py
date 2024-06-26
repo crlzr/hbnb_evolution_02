@@ -41,3 +41,8 @@ def countries_specific_cities_get(country_id):
     # Look in the example endpoints in app.py for a hint
 
     return Country.cities_data(country_id)
+
+@api_routes.route('/countries/<country_id>', methods=["DELETE"])
+def country_delete(country_id):
+    """ deletes existing country data using specified id """
+    return Country.delete(country_id)
