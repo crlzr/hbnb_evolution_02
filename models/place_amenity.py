@@ -50,8 +50,8 @@ class Place(Base):
         id = Column(String(60), nullable=False, primary_key=True)
         created_at = Column(DateTime, nullable=False, default=datetime.now())
         updated_at = Column(DateTime, nullable=False, default=datetime.now())
-        __city_id = Column("city_id", String(60), ForeignKey('cities.id'), nullable=False)
-        __host_id = Column("host_id", String(60), ForeignKey('users.id'), nullable=False)
+        __city_id = Column("city_id", String(60), ForeignKey('cities.id', ondelete='CASCADE'), nullable=False)
+        __host_id = Column("host_id", String(60), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
         __name = Column("name", String(128), nullable=False)
         __description = Column("description", String(1024), nullable=True)
         __address = Column("address", String(1024), nullable=True)
@@ -63,7 +63,7 @@ class Place(Base):
         __longitude = Column("longitude", Float, nullable=True)
         amenities = relationship("Amenity", secondary=place_amenity, back_populates = 'places')
         #reviews = relationship("Review", back_populates="place", cascade="delete, delete-orphan")
-        #owner = relationship("User", back_populates="properties")
+        owner = relationship("User", back_populates="properties")
 
     # Constructor
     def __init__(self, *args, **kwargs):

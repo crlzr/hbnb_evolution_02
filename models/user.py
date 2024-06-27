@@ -32,7 +32,7 @@ class User(Base):
         __last_name = Column("last_name", String(128), nullable=True, default="")
         __email = Column("email", String(128), nullable=False)
         __password = Column("password", String(128), nullable=False)
-        #properties = relationship("Place", back_populates="owner", cascade="delete, delete-orphan")
+        properties = relationship("Place", back_populates="owner", cascade="delete, delete-orphan")
         #reviews = relationship("Review", back_populates="writer", cascade="delete, delete-orphan")
 
     # Constructor
@@ -205,7 +205,7 @@ class User(Base):
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to load users!"
-        
+
         data = request.get_json()
         for key in ["first_name", "last_name", "email", "password"]:
             if key not in data:
