@@ -64,6 +64,7 @@ class Place(Base):
         amenities = relationship("Amenity", secondary=place_amenity, back_populates = 'places')
         reviews = relationship("Review", back_populates="place", cascade="delete, delete-orphan")
         owner = relationship("User", back_populates="properties", foreign_keys=[__host_id])
+        location_city = relationship("City", back_populates="apartment", foreign_keys=[__city_id])
 
     # Constructor
     def __init__(self, *args, **kwargs):
