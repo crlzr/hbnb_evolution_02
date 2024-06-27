@@ -8,7 +8,6 @@ from flask import jsonify, request, abort
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
-from models.city import City
 from models import datetime_format
 
 class Country(Base):
