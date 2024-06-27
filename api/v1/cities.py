@@ -46,6 +46,11 @@ def cities_specific_country_get(city_id):
     })
     return data
 
+@api_routes.route('/cities/<city_id>/places', methods=["GET"])
+def cities_all_places(city_id):
+    """ Retrieves the places for a specific city """
+    return City.places_data(city_id)
+
 @api_routes.route('/cities/<city_id>', methods=["DELETE"])
 def cities_delete(city_id):
     """ deletes existing city data using specified id """

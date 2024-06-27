@@ -152,6 +152,57 @@ class City(Base):
         return jsonify(data)
 
     @staticmethod
+    def places_data(city_id):
+        """ Class method that returns all places in a city """
+        data = []
+
+        if USE_DB_STORAGE:
+            city_data = storage.get('City', city_id)
+            city_data = city_data.apartment
+
+            for row in city_data:
+                data.append({
+                    "id": row.id,
+                    "host_id": row.host_id,
+                    "city_id": row.city_id,
+                    "name": row.name,
+                    "description": row.description,
+                    "address": row.address,
+                    "latitude": row.latitude,
+                    "longitude": row.longitude,
+                    "number_of_rooms": row.number_of_rooms,
+                    "number_of_bathrooms": row.number_of_bathrooms,
+                    "price_per_night": row.price_per_night,
+                    "max_guests": row.max_guests,
+                    "created_at": row.created_at.strftime(City.datetime_format),
+                    "updated_at": row.updated_at.strftime(City.datetime_format)
+                })
+        else:
+            place_data = storage.get("Place")
+
+            for k, v in place_data.items():
+                if v['city_id'] == city_id:
+                    data.append({
+                    "id": v['id'],
+                    "host_id": v['host_id'],
+                    "city_id": v['city_id'],
+                    "name": v['name'],
+                    "description": v['description'],
+                    "address": v['address'],
+                    "latitude": v['latitude'],
+                    "longitude": v['longitude'],
+                    "number_of_rooms": v['number_of_rooms'],
+                    "number_of_bathrooms": v['number_of_bathrooms'],
+                    "price_per_night": v['price_per_night'],
+                    "max_guests": v['max_guests'],
+                    "created_at": datetime.fromtimestamp(v['created_at']),
+                    "updated_at": datetime.fromtimestamp(v['updated_at'])
+                    })
+
+        return data
+
+
+    @staticmethod
     def create():
         """ Class method that creates a new city"""
         if request.get_json() is None:
