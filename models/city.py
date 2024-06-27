@@ -8,11 +8,10 @@ from sqlalchemy import Column, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
 from flask import jsonify, request, abort
+from models import datetime_format
 
 class City(Base):
     """Representation of city """
-
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -100,8 +99,8 @@ class City(Base):
                     "id": row.id,
                     "name": row.name,
                     "country_id": row.country_id,
-                    "created_at": row.created_at.strftime(City.datetime_format),
-                    "updated_at": row.updated_at.strftime(City.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -136,8 +135,8 @@ class City(Base):
                 "id": city_data.id,
                 "name": city_data.name,
                 "country_id": city_data.country_id,
-                "created_at": city_data.created_at.strftime(City.datetime_format),
-                "updated_at": city_data.updated_at.strftime(City.datetime_format)
+                "created_at": city_data.created_at.strftime(datetime_format),
+                "updated_at": city_data.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -174,8 +173,8 @@ class City(Base):
                     "number_of_bathrooms": row.number_of_bathrooms,
                     "price_per_night": row.price_per_night,
                     "max_guests": row.max_guests,
-                    "created_at": row.created_at.strftime(City.datetime_format),
-                    "updated_at": row.updated_at.strftime(City.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             place_data = storage.get("Place")
@@ -235,8 +234,8 @@ class City(Base):
                 # DBStorage - note that the add method uses the City object instance 'new_city'
                 storage.add('City', new_city)
                 # datetime -> readable text
-                output['created_at'] = new_city.created_at.strftime(City.datetime_format)
-                output['updated_at'] = new_city.updated_at.strftime(City.datetime_format)
+                output['created_at'] = new_city.created_at.strftime(datetime_format)
+                output['updated_at'] = new_city.updated_at.strftime(datetime_format)
             else:
                 # FileStorage - note that the add method uses the dictionary 'output'
                 storage.add('City', output)
@@ -269,8 +268,8 @@ class City(Base):
                 "id": result.id,
                 "name": result.name,
                 "country_id": result.country_id,
-                "created_at": result.created_at.strftime(City.datetime_format),
-                "updated_at": result.updated_at.strftime(City.datetime_format)
+                "created_at": result.created_at.strftime(datetime_format),
+                "updated_at": result.updated_at.strftime(datetime_format)
             }
         else:
             output = {

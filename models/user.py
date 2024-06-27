@@ -8,11 +8,10 @@ from flask import jsonify, request, abort
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
+from models import datetime_format
 
 class User(Base):
     """Representation of user """
-
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -140,8 +139,8 @@ class User(Base):
                     "last_name": row.last_name,
                     "email": row.email,
                     "password": row.password,
-                    "created_at": row.created_at.strftime(User.datetime_format),
-                    "updated_at": row.updated_at.strftime(User.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -177,8 +176,8 @@ class User(Base):
                 "last_name": user_data.last_name,
                 "email": user_data.email,
                 "password": user_data.password,
-                "created_at": user_data.created_at.strftime(User.datetime_format),
-                "updated_at": user_data.updated_at.strftime(User.datetime_format)
+                "created_at": user_data.created_at.strftime(datetime_format),
+                "updated_at": user_data.updated_at.strftime(datetime_format)
             })
         else:
             # FileStorage
@@ -274,8 +273,8 @@ class User(Base):
                 "first_name": result.first_name,
                 "last_name": result.last_name,
                 "email": result.email,
-                "created_at": result.created_at.strftime(User.datetime_format),
-                "updated_at": result.updated_at.strftime(User.datetime_format)
+                "created_at": result.created_at.strftime(datetime_format),
+                "updated_at": result.updated_at.strftime(datetime_format)
             }
         else:
             output = {

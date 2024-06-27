@@ -9,11 +9,10 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
 from models.city import City
+from models import datetime_format
 
 class Country(Base):
     """Representation of country """
-
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -100,8 +99,8 @@ class Country(Base):
                     "id": row.id,
                     "name": row.name,
                     "code": row.code,
-                    "created_at": row.created_at.strftime(Country.datetime_format),
-                    "updated_at": row.updated_at.strftime(Country.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             for k, v in country_data.items():
@@ -132,8 +131,8 @@ class Country(Base):
                 "id": country_data.id,
                 "name": country_data.name,
                 "code": country_data.code,
-                "created_at": country_data.created_at.strftime(Country.datetime_format),
-                "updated_at": country_data.updated_at.strftime(Country.datetime_format)
+                "created_at": country_data.created_at.strftime(datetime_format),
+                "updated_at": country_data.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -200,8 +199,8 @@ class Country(Base):
             if USE_DB_STORAGE:
                 # DBStorage - note that the add method uses the Country object instance
                 storage.add('Country', new_country)
-                output['created_at'] = new_country.created_at.strftime(Country.datetime_format)
-                output['updated_at'] = new_country.updated_at.strftime(Country.datetime_format)
+                output['created_at'] = new_country.created_at.strftime(datetime_format)
+                output['updated_at'] = new_country.updated_at.strftime(datetime_format)
             else:
                 # FileStorage - note that the add method uses the dictionary 'output'
                 storage.add('Country', output)
@@ -232,8 +231,8 @@ class Country(Base):
             output = {
                 "id": result.id,
                 "name": result.name,
-                "created_at": result.created_at.strftime(Country.datetime_format),
-                "updated_at": result.updated_at.strftime(Country.datetime_format)
+                "created_at": result.created_at.strftime(datetime_format),
+                "updated_at": result.updated_at.strftime(datetime_format)
             }
         else:
             output = {
@@ -259,8 +258,8 @@ class Country(Base):
                     "id": v.id,
                     "name": v.name,
                     "country_id": v.country_id,
-                    "created_at":v.created_at.strftime(Country.datetime_format),
-                    "updated_at":v.updated_at.strftime(Country.datetime_format)
+                    "created_at":v.created_at.strftime(datetime_format),
+                    "updated_at":v.updated_at.strftime(datetime_format)
                 })
         else:
             city_data = storage.get("City")

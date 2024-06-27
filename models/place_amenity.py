@@ -8,6 +8,7 @@ from flask import jsonify, request, abort
 from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
+from models import datetime_format
 
 # This is unfortunately the best possible way to have the many-to-many relationship work both ways.
 # If the two classes are split into separate files, you'll have to import the other class
@@ -26,8 +27,6 @@ if USE_DB_STORAGE:
 
 class Place(Base):
     """Representation of place """
-
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -245,8 +244,8 @@ class Place(Base):
                     "number_of_bathrooms": row.number_of_bathrooms,
                     "price_per_night": row.price_per_night,
                     "max_guests": row.max_guests,
-                    "created_at": row.created_at.strftime(Place.datetime_format),
-                    "updated_at": row.updated_at.strftime(Place.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -296,8 +295,8 @@ class Place(Base):
                 "number_of_bathrooms": place_data.number_of_bathrooms,
                 "price_per_night": place_data.price_per_night,
                 "max_guests": place_data.max_guests,
-                "created_at": place_data.created_at.strftime(Place.datetime_format),
-                "updated_at": place_data.updated_at.strftime(Place.datetime_format)
+                "created_at": place_data.created_at.strftime(datetime_format),
+                "updated_at": place_data.updated_at.strftime(datetime_format)
             })
         else:
             # FileStorage
@@ -372,8 +371,8 @@ class Place(Base):
                 # DBStorage - note that the add method uses the Place object instance 'new_place'
                 storage.add('Place', new_place)
                 # datetime -> readable text
-                output['created_at'] = new_place.created_at.strftime(Place.datetime_format)
-                output['updated_at'] = new_place.updated_at.strftime(Place.datetime_format)
+                output['created_at'] = new_place.created_at.strftime(datetime_format)
+                output['updated_at'] = new_place.updated_at.strftime(datetime_format)
             else:
                 # FileStorage - note that the add method uses the dictionary 'output'
                 storage.add('Place', output)
@@ -418,8 +417,8 @@ class Place(Base):
                 "number_of_bathrooms": result.number_of_bathrooms,
                 "price_per_night": result.price_per_night,
                 "max_guests": result.max_guests,
-                "created_at": result.created_at.strftime(Place.datetime_format),
-                "updated_at": result.updated_at.strftime(Place.datetime_format)
+                "created_at": result.created_at.strftime(datetime_format),
+                "updated_at": result.updated_at.strftime(datetime_format)
             }
         else:
             output = {
@@ -458,8 +457,6 @@ class Place(Base):
 
 class Amenity(Base):
     """Representation of amenity """
-
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -522,8 +519,8 @@ class Amenity(Base):
                 data.append({
                     "id": row.id,
                     "name": row.name,
-                    "created_at": row.created_at.strftime(Amenity.datetime_format),
-                    "updated_at": row.updated_at.strftime(Amenity.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             for k, v in amenity_data.items():
@@ -551,8 +548,8 @@ class Amenity(Base):
             data.append({
                 "id": amenity_data.id,
                 "name": amenity_data.name,
-                "created_at": amenity_data.created_at.strftime(Amenity.datetime_format),
-                "updated_at": amenity_data.updated_at.strftime(Amenity.datetime_format)
+                "created_at": amenity_data.created_at.strftime(datetime_format),
+                "updated_at": amenity_data.updated_at.strftime(datetime_format)
                 })
         else:
             data.append({
@@ -635,8 +632,8 @@ class Amenity(Base):
             output = {
                 "id": result.id,
                 "name": result.name,
-                "created_at": result.created_at.strftime(Amenity.datetime_format),
-                "updated_at": result.updated_at.strftime(Amenity.datetime_format)
+                "created_at": result.created_at.strftime(datetime_format),
+                "updated_at": result.updated_at.strftime(datetime_format)
                 }
         else:
             output = {

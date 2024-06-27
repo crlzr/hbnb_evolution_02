@@ -8,11 +8,10 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from data import storage, USE_DB_STORAGE, Base
 from flask import jsonify, request, abort
+from models import datetime_format
 
 class Review(Base):
     """Representation of Review """
-
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
 
     # Class attrib defaults
     id = None
@@ -137,8 +136,8 @@ class Review(Base):
                     "place_id": row.place_id,
                     "comment": row.comment,
                     "rating": row.rating,
-                    "created_at": row.created_at.strftime(Review.datetime_format),
-                    "updated_at": row.updated_at.strftime(Review.datetime_format)
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -174,8 +173,8 @@ class Review(Base):
                 "place_id": review_data.place_id,
                 "comment": review_data.comment,
                 "rating": review_data.rating,
-                "created_at": review_data.created_at.strftime(Review.datetime_format),
-                "updated_at": review_data.updated_at.strftime(Review.datetime_format)
+                "created_at": review_data.created_at.strftime(datetime_format),
+                "updated_at": review_data.updated_at.strftime(datetime_format)
                 })
         else:
             # FileStorage
@@ -228,8 +227,8 @@ class Review(Base):
                 # DBStorage - note that the add method uses the Review object instance 'new_review'
                 storage.add('Review', new_review)
                 # datetime -> readable text
-                output['created_at'] = new_review.created_at.strftime(Review.datetime_format)
-                output['updated_at'] = new_review.updated_at.strftime(Review.datetime_format)
+                output['created_at'] = new_review.created_at.strftime(datetime_format)
+                output['updated_at'] = new_review.updated_at.strftime(datetime_format)
             else:
                 # FileStorage - note that the add method uses the dictionary 'output'
                 storage.add('Review', output)
@@ -264,8 +263,8 @@ class Review(Base):
                 "place_id": result.place_id,
                 "comment": result.comment,
                 "rating": result.rating,
-                "created_at": result.created_at.strftime(Review.datetime_format),
-                "updated_at": result.updated_at.strftime(Review.datetime_format)
+                "created_at": result.created_at.strftime(datetime_format),
+                "updated_at": result.updated_at.strftime(datetime_format)
             }
         else:
             output = {
