@@ -251,7 +251,7 @@ class Review(Base):
 
         try:
             # update the Review record. Only name and country_id are allowed to be modified
-            result = storage.update('City', review_id, data, ["user_id", "place_id", "comment", "rating"])
+            result = storage.update('Review', review_id, data, ["user_id", "place_id", "comment", "rating"])
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to update specified Review!"
