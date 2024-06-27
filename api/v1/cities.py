@@ -34,8 +34,9 @@ def cities_specific_country_get(city_id):
     # Using model relationship to get data
     from data import storage
     data = []
-    city_data = storage.get('City', 'id', city_id)
-    c = city_data[0].country
+    city_data = storage.get('City', city_id)
+
+    c = city_data.country
     data.append({
         "id": c.id,
         "name": c.name,
