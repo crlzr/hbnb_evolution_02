@@ -64,7 +64,7 @@ class Review(Base):
         """Setter for private prop comment"""
 
         # ensure that the value is not spaces-only and is alphabets + spaces only
-        is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z ]+$", value)
+        is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z0-9.,- ]+$", value)
         if is_valid_name:
             self.__comment = value
         else:

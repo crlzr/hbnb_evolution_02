@@ -64,7 +64,7 @@ class User(Base):
 
         # ensure that the value is alphabets only
         # Note that this won't allow names like Obi-wan or Al'azif
-        is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z]+$", value)
+        is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z-]+$", value)
         if is_valid_name:
             self.__first_name = value
         else:
@@ -81,7 +81,7 @@ class User(Base):
 
         # ensure that the value is alphabets only
         # Note that this won't allow names like Obi-wan or Al'azif
-        is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z]+$", value)
+        is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z-]+$", value)
         if is_valid_name:
             self.__last_name = value
         else:
