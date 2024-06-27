@@ -16,9 +16,9 @@ class Review(Base):
 
     # Class attrib defaults
     id = None
-    __commentor_user_id = ""
+    __user_id = ""
     __place_id = ""
-    __feedback = ""
+    __comment = ""
     __rating = 0
     created_at = None
     updated_at = None
@@ -26,16 +26,16 @@ class Review(Base):
 
 
     if USE_DB_STORAGE:
-        __tablename__ = 'review'
+        __tablename__ = 'reviews'
         id = Column(String(60), nullable=False, primary_key=True)
         created_at = Column(DateTime, nullable=False, default=datetime.now())
         updated_at = Column(DateTime, nullable=False, default=datetime.now())
-        __feedback = Column("feedback", String(128), nullable=False)
+        __comment = Column("comment", String(128), nullable=False)
         __rating = Column("rating", Integer, nullable=False, default=0)
-        __commentor_user_id = Column("commentor_user_id", String(128), ForeignKey("users.id"), nullable=False)
-        __place_id = Column("place_id", String(128), ForeignKey('places.id'), nullable=False)
-        #place = relationship("Place", back_populates="reviews")
-        #writer = relationship("User", back_populates="reviews")
+        __user_id = Column("user_id", String(128), ForeignKey("users.id", ondelete='CASCADE'), nullable=False)
+        __place_id = Column("place_id", String(128), ForeignKey('places.id', ondelete='CASCADE'), nullable=False)
+        place = relationship("Place", back_populates="reviews", foreign_keys=[__place_id])
+        writer = relationship("User", back_populates="reviews", foreign_keys=[__user_id])
 
     # constructor
     def __init__(self, *args, **kwargs):
@@ -48,28 +48,28 @@ class Review(Base):
             self.created_at = datetime.now().timestamp()
             self.updated_at = self.created_at
 
-        # Only allow feedback, rating, commentor_user_id, place_id
+        # Only allow comment, rating, user_id, place_id
         # Note that setattr will call the setters for these attribs
         if kwargs:
             for key, value in kwargs.items():
-                if key in ["feedback", "rating", "commentor_user_id", "place_id"]:
+                if key in ["comment", "rating", "user_id", "place_id"]:
                     setattr(self, key, value)
 
     @property
-    def feedback(self):
-        """Getter for private prop feedback"""
-        return self.__feedback
+    def comment(self):
+        """Getter for private prop comment"""
+        return self.__comment
 
-    @feedback.setter
-    def feedback(self, value):
-        """Setter for private prop feedback"""
+    @comment.setter
+    def comment(self, value):
+        """Setter for private prop comment"""
 
         # ensure that the value is not spaces-only and is alphabets + spaces only
         is_valid_name = len(value.strip()) > 0 and re.search("^[a-zA-Z ]+$", value)
         if is_valid_name:
-            self.__feedback = value
+            self.__comment = value
         else:
-            raise ValueError("Invalid feedback specified: {}".format(value))
+            raise ValueError("Invalid comment specified: {}".format(value))
 
     @property
     def rating(self):
@@ -87,18 +87,18 @@ class Review(Base):
         self.__rating = value
 
     @property
-    def commentor_user_id(self):
-        """Getter for private prop commentor_user_id"""
-        return self.__commentor_user_id
+    def user_id(self):
+        """Getter for private prop user_id"""
+        return self.__user_id
 
-    @commentor_user_id.setter
-    def commentor_user_id(self, value):
-        """Setter for private prop commentor_user_id"""
-        # ensure that the specified commentor user id actually exists before setting
+    @user_id.setter
+    def user_id(self, value):
+        """Setter for private prop user_id"""
+        # ensure that the specified user id actually exists before setting
         if storage.get('User', value) is not None:
-            self.__commentor_user_id = value
+            self.__user_id = value
         else:
-            raise ValueError("Invalid commentor_user_id specified: {}".format(value))
+            raise ValueError("Invalid user id specified: {}".format(value))
 
     @property
     def place_id(self):
@@ -133,9 +133,9 @@ class Review(Base):
                 # use print(row.__dict__) to see the contents of the sqlalchemy model objects
                 data.append({
                     "id": row.id,
-                    "commentor_user_id": row.commentor_user_id,
+                    "user_id": row.user_id,
                     "place_id": row.place_id,
-                    "feedback": row.feedback,
+                    "comment": row.comment,
                     "rating": row.rating,
                     "created_at": row.created_at.strftime(Review.datetime_format),
                     "updated_at": row.updated_at.strftime(Review.datetime_format)
@@ -145,9 +145,9 @@ class Review(Base):
             for k, v in review_data.items():
                 data.append({
                     "id": v['id'],
-                    "commentor_user_id": v['commentor_user_id'],
+                    "user_id": v['user_id'],
                     "place_id": v['place_id'],
-                    "feedback": v['feedback'],
+                    "comment": v['comment'],
                     "rating": v['rating'],
                     "created_at": datetime.fromtimestamp(v['created_at']),
                     "updated_at": datetime.fromtimestamp(v['updated_at'])
@@ -170,9 +170,9 @@ class Review(Base):
             # DBStorage
             data.append({
                 "id": review_data.id,
-                "commentor_user_id": review_data.commentor_user_id,
+                "user_id": review_data.user_id,
                 "place_id": review_data.place_id,
-                "feedback": review_data.feedback,
+                "comment": review_data.comment,
                 "rating": review_data.rating,
                 "created_at": review_data.created_at.strftime(Review.datetime_format),
                 "updated_at": review_data.updated_at.strftime(Review.datetime_format)
@@ -181,9 +181,9 @@ class Review(Base):
             # FileStorage
             data.append({
                     "id": review_data['id'],
-                    "commentor_user_id": review_data['commentor_user_id'],
+                    "user_id": review_data['user_id'],
                     "place_id": review_data['place_id'],
-                    "feedback": review_data['feedback'],
+                    "comment": review_data['comment'],
                     "rating": review_data['rating'],
                     "created_at": datetime.fromtimestamp(review_data['created_at']),
                     "updated_at": datetime.fromtimestamp(review_data['updated_at'])
@@ -199,15 +199,15 @@ class Review(Base):
 
         data = request.get_json()
 
-        for key in ["commentor_user_id", "place_id", "feedback", "rating"]:
+        for key in ["user_id", "place_id", "comment", "rating"]:
             if key not in data:
                 abort(400, "Missing {}".format(key))
 
         try:
             new_review = Review(
-                commentor_user_id=data['commentor_user_id'],
+                user_id=data['user_id'],
                 place_id=data['place_id'],
-                feedback=data['feedback'],
+                comment=data['comment'],
                 rating=data['rating']
             )
         except ValueError as exc:
@@ -215,9 +215,9 @@ class Review(Base):
 
         output = {
             "id": new_review.id,
-            "commentor_user_id": new_review.commentor_user_id,
+            "user_id": new_review.user_id,
             "place_id": new_review.place_id,
-            "feedback": new_review.feedback,
+            "comment": new_review.comment,
             "rating": new_review.rating,
             "created_at": new_review.created_at,
             "updated_at": new_review.updated_at
@@ -252,7 +252,7 @@ class Review(Base):
 
         try:
             # update the Review record. Only name and country_id are allowed to be modified
-            result = storage.update('City', review_id, data, ["commentor_user_id", "place_id", "feedback", "rating"])
+            result = storage.update('City', review_id, data, ["user_id", "place_id", "comment", "rating"])
         except IndexError as exc:
             print("Error: ", exc)
             return "Unable to update specified Review!"
@@ -260,9 +260,9 @@ class Review(Base):
         if USE_DB_STORAGE:
             output = {
                 "id": result.id,
-                "commentor_user_id": result.commentor_user_id,
+                "user_id": result.user_id,
                 "place_id": result.place_id,
-                "feedback": result.feedback,
+                "comment": result.comment,
                 "rating": result.rating,
                 "created_at": result.created_at.strftime(Review.datetime_format),
                 "updated_at": result.updated_at.strftime(Review.datetime_format)
@@ -270,9 +270,9 @@ class Review(Base):
         else:
             output = {
                 "id": result['id'],
-                "commentor_user_id": result['commentor_user_id'],
+                "user_id": result['user_id'],
                 "place_id": result['place_id'],
-                "feedback": result['feedback'],
+                "comment": result['comment'],
                 "rating": result['rating'],
                 "created_at": datetime.fromtimestamp(result['created_at']),
                 "updated_at": datetime.fromtimestamp(result['updated_at'])

@@ -33,7 +33,7 @@ class User(Base):
         __email = Column("email", String(128), nullable=False)
         __password = Column("password", String(128), nullable=False)
         properties = relationship("Place", back_populates="owner", cascade="delete, delete-orphan")
-        #reviews = relationship("Review", back_populates="writer", cascade="delete, delete-orphan")
+        reviews = relationship("Review", back_populates="writer", cascade="delete, delete-orphan")
 
     # Constructor
     def __init__(self, *args, **kwargs):

@@ -4,6 +4,7 @@ from api.v1 import api_routes
 from models.review import Review
 
 
+
 @api_routes.route('/reviews', methods=["GET"])
 def reviews_get():
     """returns Reviews"""
@@ -22,7 +23,7 @@ def reviews_post():
     # -- Usage example --
     # curl -X POST localhost:5000/api/v1/reviews /
     #   -H "Content-Type: application/json" /
-    #   -d '{"place_id":<place_id>,"commentor_user_id":"<commentor_user_id>","feedback":"If I could give 0 stars, I would","rating":1}'
+    #   -d '{"place_id":<place_id>,"user_id":"<user_id>","comment":"If I could give 0 stars, I would","rating":1}'
 
     # use the Review class' static .create method
     return Review.create()
@@ -36,7 +37,7 @@ def reviews_put(review_id):
     #    -d '{"key1":"value1","key2":"value2"}'
 
     # use the Review class' static .update method
-    # can only update place_id, commentor_user_id, feedback, rating
+    # can only update place_id, user_id, comment, rating
     return Review.update(review_id)
 
 @api_routes.route('/reviews/<review_id>', methods=["DELETE"])
