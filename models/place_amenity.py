@@ -80,7 +80,10 @@ class Place(Base):
         # Note that setattr will call the setters for these attribs
         if kwargs:
             for key, value in kwargs.items():
-                if key in ["city_id", "host_id", "name", "description", "number_rooms", "number_of_bathrooms", "max_guest", "price_by_night", "latitude", "longitude"]:
+                if key in ["city_id", "address", "host_id",
+                           "name", "description", "number_of_rooms",
+                           "number_of_bathrooms", "max_guests", "price_per_night",
+                           "latitude", "longitude"]:
                     setattr(self, key, value)
 
     @property
