@@ -2,13 +2,14 @@
 """ objects that handles all default RestFul API actions for User"""
 from api.v1 import api_routes
 from models.user import User
-
+from data.file_export import export_to_file
+from flask import jsonify
 
 @api_routes.route('/users', methods=["GET"])
 def users_get():
     """returns Users"""
     # use the User class' static .all method
-    return User.all()
+    return jsonify(User.all())
 
 @api_routes.route('/users/<user_id>', methods=["GET"])
 def users_specific_get(user_id):
@@ -43,6 +44,13 @@ def users_put(user_id):
 def users_all_reviews(user_id):
     """returns specified user"""
     return User.reviews_data(user_id)
+
+@api_routes.route('users/export', methods=["GET"])
+def users_all_export():
+    """ exports to file """
+    data_to_print = User.all()
+    return export_to_file(data_to_print)
+
 
 @api_routes.route('/users/<user_id>', methods=["DELETE"])
 def user_delete(user_id):

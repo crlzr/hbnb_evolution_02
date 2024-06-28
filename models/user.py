@@ -155,7 +155,7 @@ class User(Base):
                     "updated_at": datetime.fromtimestamp(v['updated_at'])
                 })
 
-        return jsonify(data)
+        return data
 
     @staticmethod
     def specific(user_id):
