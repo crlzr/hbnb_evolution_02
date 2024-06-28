@@ -55,4 +55,4 @@ def users_all_export():
 @api_routes.route('/users/<user_id>', methods=["DELETE"])
 def user_delete(user_id):
     """ deletes existing user data using specified id """
-    return User.delete(user_id)
+    return jsonify(User.delete(user_id))
