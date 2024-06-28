@@ -39,6 +39,11 @@ def users_put(user_id):
     # can only update first_name and last_name
     return User.update(user_id)
 
+@api_routes.route('/users/<user_id>/reviews', methods=["GET"])
+def users_all_reviews(user_id):
+    """returns specified user"""
+    return User.reviews_data(user_id)
+
 @api_routes.route('/users/<user_id>', methods=["DELETE"])
 def user_delete(user_id):
     """ deletes existing user data using specified id """

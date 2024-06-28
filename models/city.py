@@ -157,9 +157,9 @@ class City(Base):
 
         if USE_DB_STORAGE:
             city_data = storage.get('City', city_id)
-            city_data = city_data.apartment
+            place_data = city_data.apartment
 
-            for row in city_data:
+            for row in place_data:
                 data.append({
                     "id": row.id,
                     "host_id": row.host_id,

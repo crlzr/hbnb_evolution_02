@@ -290,6 +290,42 @@ class User(Base):
         return jsonify(output)
 
     @staticmethod
+    def reviews_data(user_id):
+        """ Class method that returns all reviews of a user """
+        data = []
+
+        if USE_DB_STORAGE:
+            user_data = storage.get('User', user_id)
+            review_data = user_data.reviews
+
+            for row in review_data:
+                data.append({
+                    "id": row.id,
+                    "user_id": row.user_id,
+                    "place_id": row.place_id,
+                    "comment": row.comment,
+                    "rating": row.rating,
+                    "created_at": row.created_at.strftime(datetime_format),
+                    "updated_at": row.updated_at.strftime(datetime_format)
+                })
+        else:
+            review_data = storage.get("Review")
+
+            for k, v in review_data.items():
+                if v['user_id'] == user_id:
+                    data.append({
+                    "id": v['id'],
+                    "user_id": v['user_id'],
+                    "place_id": v['place_id'],
+                    "comment": v['comment'],
+                    "rating": v['rating'],
+                    "created_at": datetime.fromtimestamp(v['created_at']),
+                    "updated_at": datetime.fromtimestamp(v['updated_at'])
+                    })
+
+        return data
+
+    @staticmethod
     def delete(user_id):
         """ Class method that deletes an existing User"""
         try:
