@@ -114,7 +114,7 @@ class City(Base):
 
                 })
 
-        return jsonify(data)
+        return data
 
     @staticmethod
     def specific(city_id):

@@ -270,7 +270,7 @@ class Place(Base):
                     "updated_at": datetime.fromtimestamp(v['updated_at'])
                 })
 
-        return jsonify(data)
+        return data
 
     @staticmethod
     def specific(place_id):
@@ -534,7 +534,7 @@ class Amenity(Base):
                     "updated_at": datetime.fromtimestamp(v['updated_at'])
                 })
 
-        return jsonify(data)
+        return data
 
     @staticmethod
     def specific(amenity_id):

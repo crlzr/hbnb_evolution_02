@@ -2,6 +2,8 @@
 """ objects that handles all default RestFul API actions for Review"""
 from api.v1 import api_routes
 from models.review import Review
+from data.file_export import export_to_file 
+from flask import jsonify
 
 
 
@@ -9,7 +11,7 @@ from models.review import Review
 def reviews_get():
     """returns Reviews"""
     # use the Review class' static .all method
-    return Review.all()
+    return jsonify(Review.all())
 
 @api_routes.route('/reviews/<review_id>', methods=["GET"])
 def reviews_specific_get(review_id):
@@ -40,7 +42,14 @@ def reviews_put(review_id):
     # can only update place_id, user_id, comment, rating
     return Review.update(review_id)
 
+
+@api_routes.route('reviews/export', methods=["GET"])
+def reviews_all_export():
+    """ exports to file """
+    data_to_print = Review.all()
+    return export_to_file(data_to_print)
+
 @api_routes.route('/reviews/<review_id>', methods=["DELETE"])
 def review_delete(review_id):
     """ deletes existing review data using specified id """
-    return Review.delete(review_id)
+    return jsonify(Review.delete(review_id))

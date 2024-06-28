@@ -10,6 +10,7 @@ from data import storage, USE_DB_STORAGE, Base
 from flask import jsonify, request, abort
 from models import datetime_format
 
+
 class Review(Base):
     """Representation of Review """
 
@@ -152,7 +153,7 @@ class Review(Base):
                     "updated_at": datetime.fromtimestamp(v['updated_at'])
                 })
 
-        return jsonify(data)
+        return data
 
     @staticmethod
     def specific(review_id):

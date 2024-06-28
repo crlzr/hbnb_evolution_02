@@ -1,6 +1,8 @@
 """ objects that handles all default RestFul API actions for Country """
 from api.v1 import api_routes
 from models.country import Country
+from data.file_export import export_to_file 
+from flask import jsonify
 
 @api_routes.route('/countries', methods=["POST"])
 def countries_post():
@@ -15,7 +17,7 @@ def countries_post():
 @api_routes.route('/countries', methods=["GET"])
 def countries_get():
     """ returns countires data """
-    return Country.all()
+    return jsonify(Country.all())
 
 @api_routes.route('/countries/<country_id>', methods=["GET"])
 def countries_specific_get(country_id):
@@ -42,7 +44,14 @@ def countries_specific_cities_get(country_id):
 
     return Country.cities_data(country_id)
 
+@api_routes.route('countries/export', methods=["GET"])
+def countries_all_export():
+    """ exports to file """
+    data_to_print = Country.all()
+    return export_to_file(data_to_print)
+
+
 @api_routes.route('/countries/<country_id>', methods=["DELETE"])
 def country_delete(country_id):
     """ deletes existing country data using specified id """
-    return Country.delete(country_id)
+    return jsonify(Country.delete(country_id))
